@@ -15,6 +15,7 @@ Graph* GMLParser::fill_graph(std::string str_file) {
     int source = 0, target = 0;
 
     while (std::getline(file, line)) {
+        
         if (line.find("id") != -1) {
             graph->add_node(stoi(line.substr(line.find("id") + 3)));
         }
