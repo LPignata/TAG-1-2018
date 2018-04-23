@@ -1,6 +1,6 @@
 all: main
 
-main: graph.o main.o gmlparser.o
+main: graph.o main.o parser.o
 	g++ -std=c++11 -g -o main main.o graph.o parser.o
 
 parser.o: parser.cpp

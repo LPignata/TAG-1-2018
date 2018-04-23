@@ -7,10 +7,9 @@
 Graph::Graph() {}
 
 // Adiciona nó ao grafo
-Node* Graph::add_node(int id) {
+void Graph::add_node(int id) {
 	Node* node = new Node(id);
 	Graph::nodes.push_back(node);
-	return node;
 }
 
 // Adiciona aresta ao grafo
@@ -29,10 +28,12 @@ void Graph::add_edge(int id_source, int id_target) {
 	}
 
 	if (node_source == nullptr) {
-		node_source = add_node(id_source);
+		add_node(id_source);
+		node_source = Graph::nodes[Graph::nodes.size()];
 	}
 	if (node_target == nullptr) {
-		node_target = add_node(id_target);
+		add_node(id_target);
+		node_target = Graph::nodes[Graph::nodes.size()];
 	}
 
 	node_source->add_edge(node_target);
