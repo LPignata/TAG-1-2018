@@ -2,6 +2,7 @@
 #define _GRAPH_H
 
 #include <vector>
+#include <list>
 
 class Graph {
 
