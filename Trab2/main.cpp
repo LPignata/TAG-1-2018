@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <list>
 #include <ctime>
+#include <graphics.h>
 #include "graph.hpp"
 #include "parser.hpp"
 
@@ -52,14 +53,14 @@ int main() {
 	Graph* graph_huge = parser_huge.fill_graph("top_datasets/top_huge.txt");
 	
 	kahn(10, graph_small);
-	//kahn(100, graph_med);
-	//kahn(10000, graph_large);
-	//kahn(100000, graph_huge);
+	kahn(100, graph_med);
+	kahn(10000, graph_large);
+	kahn(100000, graph_huge);
 	
 	dfs(10, graph_small);
-	//dfs(100, graph_med);
-	//dfs(10000, graph_large);
-	//dfs(100000, graph_huge);
+	dfs(100, graph_med);
+	dfs(10000, graph_large);
+	dfs(100000, graph_huge);
 	
 	return 0;
 }
