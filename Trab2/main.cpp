@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <list>
 #include <ctime>
-#include <graphics.h>
 #include "graph.hpp"
 #include "parser.hpp"
 
@@ -18,26 +17,32 @@ void print_ordenation(list<int> ordenation) {
 	cout << '}' << endl << endl;
 }
 
-void kahn(int number, Graph* graph) {
+int kahn(int number, Graph* graph) {
 	clock_t clocker;
 	
 	cout << "Kahn - " << number << " vértices" << endl;
 	clocker = clock();
 	list<int> ordenation = graph->kahn();
-	clocker = clock() - clocker;
-	cout << '(' << ((double)clocker) / CLOCKS_PER_SEC << " segundos)" << endl << endl;
+	clocker = ((double)(clock() - clocker)) / CLOCKS_PER_SEC;
+	cout << '(' << clocker << " segundos)" << endl << endl;
 	print_ordenation(ordenation);
+	return clocker;
 }
 
-void dfs(int number, Graph* graph) {
+int dfs(int number, Graph* graph) {
 	clock_t clocker;
 	
 	cout << "DFS - " << number << " vértices" << endl;
 	clocker = clock();
 	list<int> ordenation = graph->dfs();
-	clocker = clock() - clocker;
-	cout << '(' << ((double)clocker) / CLOCKS_PER_SEC << " segundos)" << endl << endl;
+	clocker = ((double)(clock() - clocker)) / CLOCKS_PER_SEC;
+	cout << '(' << clocker << " segundos)" << endl << endl;
 	print_ordenation(ordenation);
+	return clocker;
+}
+
+void generate_graphic(vector<pair<int, int> > times) {
+
 }
 
 int main() {
@@ -45,22 +50,24 @@ int main() {
 	Parser parser_med;
 	Parser parser_large;
 	Parser parser_huge;
-	vector<pair<int, int> > degrees;
+	vector<pair<int, int> > timer;
 
 	Graph* graph_small = parser_small.fill_graph("top_datasets/top_small.txt");
 	Graph* graph_med = parser_med.fill_graph("top_datasets/top_med.txt");
 	Graph* graph_large = parser_large.fill_graph("top_datasets/top_large.txt");
 	Graph* graph_huge = parser_huge.fill_graph("top_datasets/top_huge.txt");
 	
-	kahn(10, graph_small);
-	kahn(100, graph_med);
-	kahn(10000, graph_large);
-	kahn(100000, graph_huge);
+	timer.push_back(make_pair(10, kahn(10, graph_small)));
+	timer.push_back(make_pair(100, kahn(100, graph_med)));
+	timer.push_back(make_pair(10000, kahn(10000, graph_large)));
+	timer.push_back(make_pair(100000, kahn(100000, graph_huge)));
 	
-	dfs(10, graph_small);
-	dfs(100, graph_med);
-	dfs(10000, graph_large);
-	dfs(100000, graph_huge);
+	timer.push_back(make_pair(10, dfs(10, graph_small)));
+	timer.push_back(make_pair(100, dfs(100, graph_med)));
+	timer.push_back(make_pair(10000, dfs(10000, graph_large)));
+	timer.push_back(make_pair(100000, dfs(100000, graph_huge)));
 	
+	generate_graphic(timer);
+
 	return 0;
 }
