@@ -24,5 +24,7 @@ Graph* Parser::fill_graph(std::string str_file) {
         graph->add_edge(source, target);
     }
 
+    file.close();
+
     return graph;
 }
