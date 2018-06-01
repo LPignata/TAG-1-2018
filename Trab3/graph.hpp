@@ -23,7 +23,7 @@ class Graph {
 				// Construtores do nó
 				Node();
 
-				Node(int id);
+				Node(std::string id);
 
 				// Adiciona ligação com nó (Adicionar aresta)
 				void add_edge(Node* node);
@@ -31,27 +31,32 @@ class Graph {
 				// Retorna o vector de adjacência do nó
 				std::vector<Node*> get_list_edge();
 				
-				// Adiciona em um o receive_node
-				void add_receive();
-				
-				// Diminui em um o receive_node
-				void sub_receive();
-				
-				// Devolve os valores originais de receive_node
-				void default_receive();
+				// Coloca valores padrão para a execução dos algoritmos
+				void set_default();
 
 				// Métodos get e set
-				int get_id();
+				std::string get_id();
 
-				void set_id(int id);
+				void set_id(std::string id);
 
 				Estate get_estate();
 
 				void set_estate(Graph::Estate estate);
 
+				int get_qualifications();
+
+				void set_qualifications(int qualifications);
+
+				int get_vacations();
+
+				void set_vacations(int vacations);
+
 				int get_degree();
 				
 				int get_receive();
+
+				bool is_teacher();
+
 
 			private:
 
@@ -59,45 +64,44 @@ class Graph {
 				std::vector<Node*> edge;
 
 				// ID do nó
-				int id;
+				std::string id;
 
 				// Estado do nó	
 				Graph::Estate estate;
-				
-				// Número de arestas que o nó recebe
-				int receive_node;
-				
-				// Número de arestas padrão que o nó recebe
-				int default_receive_node;
+
+				// Número de habilitações
+				int qualifications;
+
+				// Número de vagas
+				int vacations;
+
+				// Número de vagas disponíveis
+				int free_vacations;
+
+				// Número do índice do vetor de adjacência
+				int index;
 		};
 
 		// Construtor do grafo
 		Graph();
 
 		// Adiciona nó ao grafo
-		void add_node(int id);
+		void add_node(std::string id);
+
+		void add_node(std::string id, int qualifications, int vacations);
 
 		// Adiciona aresta ao grafo
-		void add_edge(int id_source, int id_target);
+		void add_edge(std::string id_source, std::string id_target);
 		
-		// Devolve os valores originais de receive_node
-		void default_receive();
+		// Coloca valores padrão nos nós
+		void set_default();
 		
 		// Marca todos os nós como não visitados
 		void default_estate();
-		
-		// Realiza a ordenação topológica utilizando o algoritmo de Kahn
-		// Algoritmo retirado de https://pt.wikipedia.org/wiki/Ordena%C3%A7%C3%A3o_topol%C3%B3gica
-		std::list<int> kahn();
-		
-		// Realizar a ordenação topológica utilizando o DFS
-		// Algoritmo retirado de https://pt.wikipedia.org/wiki/Ordena%C3%A7%C3%A3o_topol%C3%B3gica
-		std::list<int> dfs();
-		
-		// Método auxiliar para utilizar a ordenação DFS
-		void visite(Node* node, std::list<int>* l);
-		
 
+		// Algoritmo ótimo para professores
+		std::vector<std::pair<std::string, std::string> > to_teachers();
+		
 	private:
 
 		// Vetor contendo todos os nós do grafo

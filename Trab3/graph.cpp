@@ -8,21 +8,58 @@
 Graph::Graph() {}
 
 // Adiciona nó ao grafo
-void Graph::add_node(int id) {
-	Node* node = new Node(id);
-	Graph::nodes.push_back(node);
+void Graph::add_node(std::string id) {
+	bool exist = false;
+	for (auto node : Graph::nodes) {
+		if (node->get_id() == id)
+			exist = true;
+	}
+	if (!exist) {
+		Node* node = new Node(id);
+		Graph::nodes.push_back(node);
+	}
+}
+
+void Graph::add_node(std::string id, int qualifications, int vacations) {
+	bool exist = false;
+	for (auto node : Graph::nodes) {
+		if (node->get_id() == id) {
+			exist = true;
+			node->set_qualifications(qualifications);
+			node->set_vacations(vacations);
+		}
+	}
+	if (!exist) {
+		Node* node = new Node(id);
+		node->set_qualifications(qualifications);
+		node->set_vacations(vacations);
+		Graph::nodes.push_back(node);
+	}
 }
 
 // Adiciona aresta ao grafo
-void Graph::add_edge(int id_source, int id_target) {
-	Graph::nodes[id_source]->add_edge(Graph::nodes[id_target]);
-	Graph::nodes[id_target]->add_receive();
+void Graph::add_edge(std::string id_source, std::string id_target) {
+	int source = -1, target = -1;
+	for (int i = 0; i < Graph::nodes.size(); i++) {
+		if (Graph::nodes[i]->get_id() == id_source)
+			source = i;
+		if (Graph::nodes[i]->get_id() == id_target)
+			target = i;
+	}
+	if (source == -1) {
+		add_node(id_source);
+		source = Graph::nodes.size() - 1;
+	}
+	if (target == -1) {
+		add_node(id_target);
+		target = Graph::nodes.size() - 1;
+	}
+	Graph::nodes[source]->add_edge(Graph::nodes[target]);
 }
 
-// Devolve os valores originais de receive_node
-void Graph::default_receive() {
+void Graph::set_default() {
 	for (auto node : nodes) {
-		node->default_receive();
+		node->set_default();
 	}
 }
 
@@ -40,7 +77,7 @@ Graph::Node::Node() {
 	default_receive_node = 0;
 }
 
-Graph::Node::Node(int id) {
+Graph::Node::Node(std::string id) {
 	this->estate = NO_VISITED;
 	this->id = id;
 	receive_node = 0;
@@ -74,11 +111,11 @@ void Graph::Node::default_receive() {
 }
 
 // Métodos get e set
-int Graph::Node::get_id() {
+std::string Graph::Node::get_id() {
 	return this->id;
 }
 
-void Graph::Node::set_id(int id) {
+void Graph::Node::set_id(std::string id) {
 	this->id = id;
 }
 
@@ -90,6 +127,22 @@ void Graph::Node::set_estate(Graph::Estate estate) {
 	this->estate = estate;
 }
 
+int Graph::Node::get_qualifications() {
+	return qualifications;
+}
+
+void Graph::Node::set_qualifications(int qualifications) {
+	this->qualifications = qualifications;
+}
+
+int Graph::Node::get_vacations() {
+	return vacations;
+}
+
+void Graph::Node::set_vacations(int vacations) {
+	this->vacations = vacations;
+}
+
 int Graph::Node::get_degree() {
 	return edge.size();
 }
@@ -98,63 +151,10 @@ int Graph::Node::get_receive() {
 	return receive_node;
 }
 
-// Realiza a ordenação topológica utilizando o algoritmo de Kahn
-// Algoritmo retirado de https://pt.wikipedia.org/wiki/Ordena%C3%A7%C3%A3o_topol%C3%B3gica
-std::list<int> Graph::kahn() {
-	std::list<int> l;
-	std::list<Node*> s;
-	Node* n;
-	
-	default_receive();
-	
-	for (auto node : nodes) {
-		if (node->get_receive() == 0) {
-			s.push_back(node);
-		}
-	}
-	
-	while (!s.empty()) {
-		n = s.front();
-		s.pop_front();
-		l.push_back(n->get_id());
-		
-		for(auto node : n->get_list_edge()) {
-			node->sub_receive();
-			if (node->get_receive() == 0) {
-				s.push_back(node);
-			}
-		}
-	}
-
-	return l;
+bool Graph::Node::is_teacher() {
+	return get_vacations() == 0;
 }
 
-// Realizar a ordenação topológica utilizando o DFS
-// Algoritmo retirado de https://aprender.ead.unb.br/pluginfile.php/502187/mod_resource/content/1/aula_graf2018_1.11_12.pdf
-std::list<int> Graph::dfs() {
-	std::list<int> l;
-
-	default_estate();
-	default_receive();
-
-	for (auto node : nodes) {
-		if (node->get_estate() == Estate::NO_VISITED) {
-			visite(node, &l);
-		}
-	}
+std::vector<std::pair<std::string, std::string> > Graph::to_teachers() {
 	
-	return l;
-}
-
-// Método auxiliar para utilizar a ordenação DFS
-void Graph::visite(Node* node, std::list<int>* l) {
-	node->set_estate(Estate::CHECKED);
-	
-	for (auto n : node->get_list_edge()) {
-		if (n->get_estate() == NO_VISITED) {
-			visite(n, l);
-		}
-	}
-	
-	l->push_front(node->get_id());
 }
