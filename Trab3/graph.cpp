@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <list>
+#include <string>
 #include "graph.hpp"
 
 // Construtor do grafo
@@ -63,6 +64,15 @@ void Graph::set_default() {
 	}
 }
 
+void Graph::Node::set_default() {
+	while (!list->empty()) {
+		list->pop_back();
+	}
+	for (auto node : edge) {
+		list_edge->push_back(node);
+	}
+}
+
 // Marca todos os nós como não visitados
 void Graph::default_estate() {
 	for (auto node : nodes) {
@@ -73,15 +83,15 @@ void Graph::default_estate() {
 // Construtores do nó
 Graph::Node::Node() {
 	this->estate = NO_VISITED;
-	receive_node = 0;
-	default_receive_node = 0;
+	this->list_edge = new std::list<Node*>;
+	this->list = new std::vector<Node*>;
 }
 
 Graph::Node::Node(std::string id) {
 	this->estate = NO_VISITED;
 	this->id = id;
-	receive_node = 0;
-	default_receive_node = 0;
+	this->list_edge = new std::list<Node*>;
+	this->list = new std::vector<Node*>;
 }
 
 // Adiciona ligação com nó (Adicionar aresta)
@@ -90,24 +100,8 @@ void Graph::Node::add_edge(Node* node) {
 }
 
 // Retorna o vector de adjacência do nó
-std::vector<Graph::Node*> Graph::Node::get_list_edge() {
-	return Graph::Node::edge;
-}
-
-// Adiciona em um o receive_node
-void Graph::Node::add_receive() {
-	receive_node++;
-	default_receive_node++;
-}
-
-// Diminui em um o receive_node
-void Graph::Node::sub_receive() {
-	receive_node--;
-}
-
-// Devolve os valores originais de receive_node
-void Graph::Node::default_receive() {
-	receive_node = default_receive_node;
+std::list<Graph::Node*>* Graph::Node::get_list_edge() {
+	return Graph::Node::list_edge;
 }
 
 // Métodos get e set
@@ -147,14 +141,74 @@ int Graph::Node::get_degree() {
 	return edge.size();
 }
 
-int Graph::Node::get_receive() {
-	return receive_node;
-}
-
 bool Graph::Node::is_teacher() {
 	return get_vacations() == 0;
 }
 
+std::vector<Graph::Node*>* Graph::Node::get_list() {
+	return Graph::Node::list;
+}
+
 std::vector<std::pair<std::string, std::string> > Graph::to_teachers() {
+	std::list<Node*> list;
+	Node *p, *e;
+
+	set_default();
 	
+	// Adicionar os professores na fila
+	for (auto node : nodes) {
+		if (node->is_teacher())
+			list.push_back(node);
+	}
+
+	while (!list.empty()) {
+		// Pega o primeiro elemento da lista
+		p = list.front();
+		list.pop_front();
+		if (p->get_list_edge()->empty())
+			continue;
+		// Retira o primeiro elemento de p
+		e = p->get_list_edge()->front();
+		p->get_list_edge()->pop_front();
+		// Adiciona p em e
+		e->get_list()->push_back(p);
+
+		// Confere se estourou e retira o pior
+		if (e->get_list()->size() > e->get_vacations()) {
+			Node* n = NULL;
+			for (auto node : *e->get_list()) {
+				if (n == NULL) {
+					n = node;
+				}
+				else {
+					if (n->get_qualifications() == e->get_qualifications())
+						n = node;
+					else if (n->get_qualifications() > e->get_qualifications()) {
+						if (node->get_qualifications() < e->get_qualifications())
+							n = node;
+						else 
+							n = (node->get_qualifications() < n->get_qualifications()) ? node : n;
+					}
+					else {
+						if (node->get_qualifications() > e->get_qualifications())
+							n = node;
+						else 
+							n = (node->get_qualifications() > n->get_qualifications()) ? node : n;
+					}
+				}
+			}
+			e->get_list()->erase(std::find(e->get_list()->begin(), e->get_list()->end(), n));
+			list.push_back(n);
+		}
+	}
+
+	std::vector<std::pair<std::string, std::string> > vector;
+	for (auto node : nodes) {
+		if (!node->is_teacher()) {
+			for (auto n : *node->get_list()) {
+				vector.push_back(std::make_pair(node->get_id(), n->get_id()));
+			}
+		}
+	}
+	return vector;
 }

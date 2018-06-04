@@ -13,5 +13,8 @@ int main() {
 	Parser parser;
 
 	Graph* graph = parser.fill_graph("data/entradaProj3TAG.txt");
+	for (auto n : graph->to_teachers()) {
+		cout << '(' << n.first << ", " << n.second << ')' << endl;
+	}
 	return 0;
 }

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <list>
+#include <algorithm>
 
 class Graph {
 
@@ -28,8 +29,8 @@ class Graph {
 				// Adiciona ligação com nó (Adicionar aresta)
 				void add_edge(Node* node);
 
-				// Retorna o vector de adjacência do nó
-				std::vector<Node*> get_list_edge();
+				// Retorna a lista de adjacência do nó
+				std::list<Node*>* get_list_edge();
 				
 				// Coloca valores padrão para a execução dos algoritmos
 				void set_default();
@@ -53,15 +54,17 @@ class Graph {
 
 				int get_degree();
 				
-				int get_receive();
-
 				bool is_teacher();
+
+				std::vector<Node*>* get_list();
 
 
 			private:
 
 				// Vetor contendo os nós na qual o nó atual contém ligação (arestas)
 				std::vector<Node*> edge;
+
+				std::list<Node*>* list_edge;
 
 				// ID do nó
 				std::string id;
@@ -75,11 +78,11 @@ class Graph {
 				// Número de vagas
 				int vacations;
 
-				// Número de vagas disponíveis
-				int free_vacations;
-
 				// Número do índice do vetor de adjacência
 				int index;
+
+				// Lista para auxiliar os algoritmos
+				std::vector<Node*>* list;
 		};
 
 		// Construtor do grafo
